@@ -40,7 +40,7 @@ public class CalcNode
     //returns a float between -1 and 1 based on num
     float sigmoid(float num)
     {
-        return (float)Math.Tanh(num);
+        return num / (inbound_values.Length);
     }
 };
 
@@ -61,9 +61,9 @@ public class InputNode
 
 public class Network
 {
-    public InputNode[] input_nodes;
-    public CalcNode[] middle_nodes;
-    public CalcNode[] output_nodes;
+    public InputNode[] input_nodes; //array of input nodes
+    public CalcNode[] middle_nodes; //array of middle nodes
+    public CalcNode[] output_nodes; //array of output nodes
 
     private readonly Random rand_gen = new Random();
 
@@ -82,21 +82,20 @@ public class Network
 
         for (int i = 0; i < in_count; i++)
         {
-            input_nodes[i] = new InputNode();
+            input_nodes[i] = new InputNode(mid_count, out_count);
         }
         for (int i = 0; i < mid_count; i++)
         {
-            middle_nodes[i] = new CalcNode();
+            middle_nodes[i] = new CalcNode(in_count, mid_count, out_count);
         }
         for (int i = 0; i < out_count; i++)
         {
-            output_nodes[i] = new CalcNode();
+            output_nodes[i] = new CalcNode(in_count, mid_count, out_count);
         }
     }
 
-    void step(float[] inputs)
+    public float[] step(float[] inputs)
     {
-
         //calculate current value using inbound values and prepare to override inbound values
         foreach (CalcNode mid_node in middle_nodes)
         {
@@ -159,6 +158,8 @@ public class Network
                 }
             }
         }
+
+        return getOutputs();
     }
 
     //returns an array of the current values for each of the output nodes
@@ -225,6 +226,6 @@ public class Network
     //returns a float between -1 and 1 based on num
     float sigmoid(float num)
     {
-        return (float)Math.Tanh(num);
+        return (float)((num / 8388607.5) - 1);
     }
 };
